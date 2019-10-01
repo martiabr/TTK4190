@@ -17,7 +17,7 @@
 %                            w = angular velocity vector (3x1)
 %                            q = unit quaternion vector (4x1)
 %
-% Author:                   2018-08-15 Thor I. Fossen and Håkon H. Helgesen
+% Author:                   2018-08-15 Thor I. Fossen and Hï¿½kon H. Helgesen
 
 %% USER INPUTS
 h = 0.1;                     % sample time (s)
@@ -48,17 +48,21 @@ table = zeros(N+1,17);        % memory allocation
 %% FOR-END LOOP
 for i = 1:N+1
    t = (i-1)*h;                  % time
-   
-   q_d = euler2q(0, deg2rad*15*cos(0.1*t), deg2rad*10*sin(0.05*t));
+   euler_d = [0; deg2rad*15*cos(0.1*t); deg2rad*10*sin(0.05*t)];
+   q_d = euler2q(euler_d(1), euler_d(2), euler_d(3));
    q_d_conj = [q_d(1); -q_d(2); -q_d(3); -q_d(4)];
    
    q_thilde = quatprod(q_d_conj, q);
    
    tau = -k_d*eye(3)*w-k_p*eye(3)*q_thilde(2:4);            % control law
     
-   [phi_err, theta_err, psi_err] = q2euler(q_thilde);
+   %[phi_err, theta_err, psi_err] = q2euler(q_thilde);
    [phi,theta,psi] = q2euler(q); % transform q to Euler angles
    [J,J1,J2] = quatern(q);       % kinematic transformation matrices
+   
+   phi_err = phi - euler_d(1);
+   theta_err = theta - euler_d(2);
+   psi_err = psi - euler_d(3);
    
    q_dot = J2*w;                        % quaternion kinematics
    w_dot = I_inv*(Smtrx(I*w)*w + tau);  % rigid-body kinetics
@@ -88,6 +92,8 @@ hold on;
 plot(t, phi, 'b');
 plot(t, theta, 'r');
 plot(t, psi, 'g');
+plot(t, 15*cos(0.1*t), '--r');
+plot(t, 10*sin(0.05*t), '--g');
 hold off;
 grid on;
 legend('\phi', '\theta', '\psi');
