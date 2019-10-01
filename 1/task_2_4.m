@@ -11,7 +11,7 @@ clear;
         rudder_sat = 0.035;
     %Control parameters
         k_p = 5e-5;
-        k_i = 5e-8; %5e-8 to cancel bias, 0 to observe bias 
+        k_i = 0e-8; %5e-8 to cancel bias, 0 to observe bias 
         k_d = 1e-2;
     %Simulation parameters
         h = 0.01; %step length
